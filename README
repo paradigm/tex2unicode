@@ -1,5 +1,7 @@
 This is a weechat script which converts TeX-style input to unicode/weechat.
 
+To install, add it to your "~/.weechat/python/autoload/" folder.  To run it, either restart weechat or run "/python autoload" in weechat.
+
 Currently supported features in v0.2:
 	Greek alphabet, capital and lowercase
 		e.g.: \pi, \Delta
