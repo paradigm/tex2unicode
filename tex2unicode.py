@@ -20,7 +20,9 @@
 # (this script requires WeeChat 0.3.0 or newer)
 #
 # History:
-# 2010-12-08, Daniel Thau
+# 2010-12-10, Daniel Thau
+#   version 0.3: implemeneted goosemo's recommendations to clean up the code
+# 2010-12-09, Daniel Thau
 #   version 0.2: added support for {} blocks
 # 2010-12-08, Daniel Thau
 #   version 0.1: initial release
@@ -31,11 +33,11 @@
 #
 
 
-import weechat
+import weechat,string
 
 SCRIPT_NAME    = "tex2unicode"
 SCRIPT_AUTHOR  = "Daniel Thau"
-SCRIPT_VERSION = "0.2"
+SCRIPT_VERSION = "0.3"
 SCRIPT_LICENSE = "GPL3"
 SCRIPT_DESC    = "converts TeX-style input to unicode/weechat"
 
@@ -51,6 +53,22 @@ if weechat.register(SCRIPT_NAME, SCRIPT_AUTHOR, SCRIPT_VERSION, SCRIPT_LICENSE,
         weechat.hook_command_run(value[0], value[1], "")
 
 """
+find the matching } in a {} block
+"""
+def find_bracket_end(bracket_start,weechatbuffer):
+    bracket_end = 0 # will be matching }
+    nested_count = 0 # number of nested {'s - don't match a nested }
+    for index in range(bracket_start,len(weechatbuffer)):
+        if weechatbuffer[index]=='}' and nested_count==0: # found matching }
+            return index
+        if weechatbuffer[index]=='{': # found nested {
+            nested_count=nested_count+1
+        if weechatbuffer[index]=='}' and nested_count>0: # found nested }
+            nested_count=nested_count-1
+    return index
+
+
+"""
 actual replace stuff
 """
 def command_run_input(data, buffer, command):
@@ -62,7 +80,7 @@ def command_run_input(data, buffer, command):
         # get buffer to parse/replace
         weechatbuffer = unicode(weechat.buffer_get_string(buffer, 'input'))
         # don't interfere with any commands other than /me
-        if weechatbuffer.startswith('/') and weechatbuffer.startswith('/me')==False:
+        if weechatbuffer.startswith('/') and not weechatbuffer.startswith('/me'):
             return weechat.WEECHAT_RC_OK
         # disable tex2unicode by starting with a space
         if weechatbuffer.startswith(' '):
@@ -71,47 +89,20 @@ def command_run_input(data, buffer, command):
         next few sections deal with the various ways TeX sees bolding
         """
         # make text in \textbf{} bold
-        while weechatbuffer.find('\\textbf{')!=-1:
+        while '\\textbf{' in weechatbuffer:
             # find matching }
             bracket_start = weechatbuffer.find('\\textbf{')+8 # start of _{}'s inside
-            index = bracket_start # where we are in search for }
-            bracket_end = 0 # will be matching }
-            nested_count = 0 # number of nested {'s - don't match a nested }
-            for index in range(bracket_start,len(weechatbuffer)):
-                if weechatbuffer[index]=='}' and nested_count==0 and bracket_end==0: # found matching }
-                    bracket_end=index
-                if weechatbuffer[index]=='{': # found nested {
-                    nested_count=nested_count+1
-                if weechatbuffer[index]=='}' and nested_count>0: # found nested }
-                    nested_count=nested_count-1
+            bracket_end = find_bracket_end(bracket_start,weechatbuffer)
             weechatbuffer=weechatbuffer[:bracket_start-8]+weechat.color('bold')+weechatbuffer[bracket_start:bracket_end]+weechat.color('-bold')+weechatbuffer[bracket_end+1:]
-        while weechatbuffer.find('\\mathbf{')!=-1:
+        while '\\mathbf{' in weechatbuffer:
             # find matching }
             bracket_start = weechatbuffer.find('\\mathbf{')+8 # start of _{}'s inside
-            index = bracket_start # where we are in search for }
-            bracket_end = 0 # will be matching }
-            nested_count = 0 # number of nested {'s - don't match a nested }
-            for index in range(bracket_start,len(weechatbuffer)):
-                if weechatbuffer[index]=='}' and nested_count==0 and bracket_end==0: # found matching }
-                    bracket_end=index
-                if weechatbuffer[index]=='{': # found nested {
-                    nested_count=nested_count+1
-                if weechatbuffer[index]=='}' and nested_count>0: # found nested }
-                    nested_count=nested_count-1
+            bracket_end = find_bracket_end(bracket_start,weechatbuffer)
             weechatbuffer=weechatbuffer[:bracket_start-8]+weechat.color('bold')+weechatbuffer[bracket_start:bracket_end]+weechat.color('-bold')+weechatbuffer[bracket_end+1:]
-        while weechatbuffer.find('\\bf{')!=-1:
+        while '\\bf{' in weechatbuffer:
             # find matching }
             bracket_start = weechatbuffer.find('\\bf{')+4 # start of _{}'s inside
-            index = bracket_start # where we are in search for }
-            bracket_end = 0 # will be matching }
-            nested_count = 0 # number of nested {'s - don't match a nested }
-            for index in range(bracket_start,len(weechatbuffer)):
-                if weechatbuffer[index]=='}' and nested_count==0 and bracket_end==0: # found matching }
-                    bracket_end=index
-                if weechatbuffer[index]=='{': # found nested {
-                    nested_count=nested_count+1
-                if weechatbuffer[index]=='}' and nested_count>0: # found nested }
-                    nested_count=nested_count-1
+            bracket_end = find_bracket_end(bracket_start,weechatbuffer)
             weechatbuffer=weechatbuffer[:bracket_start-4]+weechat.color('bold')+weechatbuffer[bracket_start:bracket_end]+weechat.color('-bold')+weechatbuffer[bracket_end+1:]
         """
         expand _{} and ^{} blocks, distributing the _'s and ^'s
@@ -120,19 +111,10 @@ def command_run_input(data, buffer, command):
         while weechatbuffer.find('_{')!=-1:
             # find matching }
             bracket_start = weechatbuffer.find('_{')+2 # start of _{}'s inside
-            index = bracket_start # where we are in search for }
-            bracket_end = 0 # will be matching }
-            nested_count = 0 # number of nested {'s - don't match a nested }
-            for index in range(bracket_start,len(weechatbuffer)):
-                if weechatbuffer[index]=='}' and nested_count==0 and bracket_end==0: # found matching }
-                    bracket_end=index
-                if weechatbuffer[index]=='{': # found nested {
-                    nested_count=nested_count+1
-                if weechatbuffer[index]=='}' and nested_count>0: # found nested }
-                    nested_count=nested_count-1
+            bracket_end = find_bracket_end(bracket_start,weechatbuffer)
             new_inside_bracket=''
             for char in weechatbuffer[bracket_start:bracket_end]:
-                if 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789()+-='.find(char)!=-1:
+                if (string.letters + string.digits + '()+-=').find(char)!=-1:
                     new_inside_bracket=new_inside_bracket+'_'
                 new_inside_bracket=new_inside_bracket+char
             weechatbuffer=weechatbuffer[:bracket_start-2]+new_inside_bracket+weechatbuffer[bracket_end+1:]
@@ -141,19 +123,10 @@ def command_run_input(data, buffer, command):
         while weechatbuffer.find('^{')!=-1:
             # find matching }
             bracket_start = weechatbuffer.find('^{')+2 # start of ^{}'s inside
-            index = bracket_start # where we are in search for }
-            bracket_end = 0 # will be matching }
-            nested_count = 0 # number of nested {'s - don't match a nested }
-            for index in range(bracket_start,len(weechatbuffer)):
-                if weechatbuffer[index]=='}' and nested_count==0 and bracket_end==0: # found matching }
-                    bracket_end=index
-                if weechatbuffer[index]=='{': # found nested {
-                    nested_count=nested_count+1
-                if weechatbuffer[index]=='}' and nested_count>0: # found nested }
-                    nested_count=nested_count-1
+            bracket_end = find_bracket_end(bracket_start,weechatbuffer)
             new_inside_bracket=''
             for char in weechatbuffer[bracket_start:bracket_end]:
-                if 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789()+-='.find(char)!=-1:
+                if (string.letters + string.digits + '()+-=').find(char)!=-1:
                     new_inside_bracket=new_inside_bracket+'^'
                 new_inside_bracket=new_inside_bracket+char
             weechatbuffer=weechatbuffer[:bracket_start-2]+new_inside_bracket+weechatbuffer[bracket_end+1:]
