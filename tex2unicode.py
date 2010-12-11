@@ -51,7 +51,7 @@ if weechat.register(SCRIPT_NAME, SCRIPT_AUTHOR, SCRIPT_VERSION, SCRIPT_LICENSE,
         weechat.hook_command_run(value[0], value[1], "")
 
 def find_bracket_end(bracket_start,weechatbuffer):
-"""Find the matching } in a {} block."""
+    """Find the matching } in a {} block."""
     bracket_end = 0 # will be matching }
     nested_count = 0 # number of nested {'s - don't match a nested }
     for index in range(bracket_start,len(weechatbuffer)):
@@ -65,9 +65,7 @@ def find_bracket_end(bracket_start,weechatbuffer):
 
 
 def command_run_input(data, buffer, command):
-    """
-    When applicable, substitute TeX-style sections of weechat buffer with unicode or weechat equivilents.
-    """
+    """When applicable, substitute TeX-style sections of weechat buffer with unicode or weechat equivilents."""
     # if return is pressed, get input from weechat and check to ensure that we want to do something
     if command == "/input return": # enter was pressed
         # get buffer to parse/replace
