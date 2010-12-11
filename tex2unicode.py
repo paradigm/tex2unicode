@@ -41,9 +41,7 @@ SCRIPT_VERSION = "0.3"
 SCRIPT_LICENSE = "GPL3"
 SCRIPT_DESC    = "converts TeX-style input to unicode/weechat"
 
-"""
-set up weechat hooks
-"""
+"""Set up weechat hooks."""
 if weechat.register(SCRIPT_NAME, SCRIPT_AUTHOR, SCRIPT_VERSION, SCRIPT_LICENSE,
                     SCRIPT_DESC, "", ""):
     hook_command_run = {
@@ -52,10 +50,8 @@ if weechat.register(SCRIPT_NAME, SCRIPT_AUTHOR, SCRIPT_VERSION, SCRIPT_LICENSE,
     for hook, value in hook_command_run.iteritems():
         weechat.hook_command_run(value[0], value[1], "")
 
-"""
-find the matching } in a {} block
-"""
 def find_bracket_end(bracket_start,weechatbuffer):
+"""Find the matching } in a {} block."""
     bracket_end = 0 # will be matching }
     nested_count = 0 # number of nested {'s - don't match a nested }
     for index in range(bracket_start,len(weechatbuffer)):
@@ -68,14 +64,11 @@ def find_bracket_end(bracket_start,weechatbuffer):
     return index
 
 
-"""
-actual replace stuff
-"""
 def command_run_input(data, buffer, command):
     """
-    if return is pressed, get input from weechat and check
-    to ensure that we want to do something
+    When applicable, substitute TeX-style sections of weechat buffer with unicode or weechat equivilents.
     """
+    # if return is pressed, get input from weechat and check to ensure that we want to do something
     if command == "/input return": # enter was pressed
         # get buffer to parse/replace
         weechatbuffer = unicode(weechat.buffer_get_string(buffer, 'input'))
@@ -85,33 +78,24 @@ def command_run_input(data, buffer, command):
         # disable tex2unicode by starting with a space
         if weechatbuffer.startswith(' '):
             return weechat.WEECHAT_RC_OK
-        """
-        next few sections deal with the various ways TeX sees bolding
-        """
-        # make text in \textbf{} bold
+        # next few sections deal with the various ways TeX sees bolding
         while '\\textbf{' in weechatbuffer:
-            # find matching }
-            bracket_start = weechatbuffer.find('\\textbf{')+8 # start of _{}'s inside
-            bracket_end = find_bracket_end(bracket_start,weechatbuffer)
+            bracket_start = weechatbuffer.find('\\textbf{')+8 # start of {} block
+            bracket_end = find_bracket_end(bracket_start,weechatbuffer) # end of {} block
             weechatbuffer=weechatbuffer[:bracket_start-8]+weechat.color('bold')+weechatbuffer[bracket_start:bracket_end]+weechat.color('-bold')+weechatbuffer[bracket_end+1:]
         while '\\mathbf{' in weechatbuffer:
-            # find matching }
-            bracket_start = weechatbuffer.find('\\mathbf{')+8 # start of _{}'s inside
-            bracket_end = find_bracket_end(bracket_start,weechatbuffer)
+            bracket_start = weechatbuffer.find('\\mathbf{')+8 # start of {} block
+            bracket_end = find_bracket_end(bracket_start,weechatbuffer) # end of {} block
             weechatbuffer=weechatbuffer[:bracket_start-8]+weechat.color('bold')+weechatbuffer[bracket_start:bracket_end]+weechat.color('-bold')+weechatbuffer[bracket_end+1:]
         while '\\bf{' in weechatbuffer:
-            # find matching }
-            bracket_start = weechatbuffer.find('\\bf{')+4 # start of _{}'s inside
-            bracket_end = find_bracket_end(bracket_start,weechatbuffer)
+            bracket_start = weechatbuffer.find('\\bf{')+4 # start of {} block
+            bracket_end = find_bracket_end(bracket_start,weechatbuffer) # end of {} block
             weechatbuffer=weechatbuffer[:bracket_start-4]+weechat.color('bold')+weechatbuffer[bracket_start:bracket_end]+weechat.color('-bold')+weechatbuffer[bracket_end+1:]
-        """
-        expand _{} and ^{} blocks, distributing the _'s and ^'s
-        """
+        # expand _{} and ^{} blocks, distributing the _'s and ^'s
         # prepend viable chars with _ in _{} block
         while weechatbuffer.find('_{')!=-1:
-            # find matching }
-            bracket_start = weechatbuffer.find('_{')+2 # start of _{}'s inside
-            bracket_end = find_bracket_end(bracket_start,weechatbuffer)
+            bracket_start = weechatbuffer.find('_{')+2 # start of {} block
+            bracket_end = find_bracket_end(bracket_start,weechatbuffer) # end of {} block
             new_inside_bracket=''
             for char in weechatbuffer[bracket_start:bracket_end]:
                 if (string.letters + string.digits + '()+-=').find(char)!=-1:
@@ -121,9 +105,8 @@ def command_run_input(data, buffer, command):
 
         # prepend viable chars with ^ in ^{} block
         while weechatbuffer.find('^{')!=-1:
-            # find matching }
-            bracket_start = weechatbuffer.find('^{')+2 # start of ^{}'s inside
-            bracket_end = find_bracket_end(bracket_start,weechatbuffer)
+            bracket_start = weechatbuffer.find('^{')+2 # start of {} block
+            bracket_end = find_bracket_end(bracket_start,weechatbuffer) # end of {} block
             new_inside_bracket=''
             for char in weechatbuffer[bracket_start:bracket_end]:
                 if (string.letters + string.digits + '()+-=').find(char)!=-1:
@@ -131,9 +114,7 @@ def command_run_input(data, buffer, command):
                 new_inside_bracket=new_inside_bracket+char
             weechatbuffer=weechatbuffer[:bracket_start-2]+new_inside_bracket+weechatbuffer[bracket_end+1:]
 
-        """
-        replace each TeX-style input with comparable unicode
-        """
+        # replace each TeX-style input with comparable unicode
         weechatbuffer=unicode(weechatbuffer.replace(u'``',u'\u201C'))
         weechatbuffer=unicode(weechatbuffer.replace('\'\'',u'\u201D'))
         weechatbuffer=unicode(weechatbuffer.replace('\\alpha',u'\u03B1'))
@@ -249,8 +230,6 @@ def command_run_input(data, buffer, command):
         weechatbuffer=unicode(weechatbuffer.replace('\\checkedbox',u'\u2611'))
         weechatbuffer=unicode(weechatbuffer.replace('\\checkmarkbold',u'\u2714'))
         weechatbuffer=unicode(weechatbuffer.replace('\\checkmark',u'\u2713'))
-        """
-        give weechat the new buffer
-        """
+        # give weechat the new buffer
         weechat.buffer_set(buffer, 'input', weechatbuffer.encode('utf-8'))
     return weechat.WEECHAT_RC_OK
