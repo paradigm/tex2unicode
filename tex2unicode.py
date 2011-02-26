@@ -178,6 +178,7 @@ def command_run_input(data, buffer, command):
         weechatbuffer=unicode(weechatbuffer.replace('\\equiv',u'\u2261'))
         weechatbuffer=unicode(weechatbuffer.replace('\\dots',u'\u2026'))
         weechatbuffer=unicode(weechatbuffer.replace('\\ldots',u'\u2026'))
+        weechatbuffer=unicode(weechatbuffer.replace('\\Telephone',u'\u260F'))
         weechatbuffer=unicode(weechatbuffer.replace('\\frac{1}{2}',u'\u00BD'))
         weechatbuffer=unicode(weechatbuffer.replace('\\frac{1}{4}',u'\u00BC'))
         weechatbuffer=unicode(weechatbuffer.replace('\\frac{3}{4}',u'\u00BE'))
