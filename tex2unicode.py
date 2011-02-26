@@ -70,7 +70,7 @@ def command_lookup_table(command,states):
         new_attributes.append("bold")
     if command=="mathbf":
         new_attributes.append("bold")
-    if command=="bf":
+    if command=="bfseries":
         new_attributes.append("scopebold")
     # escaped special/active
     if command=="\\":

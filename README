@@ -12,9 +12,9 @@ Currently supported features in v0.4:
         e.g.: ^n, _2
         e.g.: y_{12}=x^{1+2}
     bold
-        e.g.: \textbf{foo}, \mathbf{bar}, \bf baz
+        e.g.: \textbf{foo}, \mathbf{bar}, \bfseries baz
     scoping/grouping
-        foo {\bf bar} baz
+        foo {\bfseries bar} baz
         2^3+4^{5+6}
 
 TODO:
