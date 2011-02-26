@@ -3,16 +3,21 @@ This is a weechat script which converts TeX-style input to unicode/weechat.
 To install, place tex2unicode.py into ~/.weechat/python and then inside of weechat issue the command "/python load python/tex2unicode.py"
 Alternatively you can placing it into your "~/.weechat/python/autoload" to have weechat automatically load it when it starts.
 
-Currently supported features in v0.2:
-	Greek alphabet, lowercase and capital
-		e.g.: \pi, \Delta
-	some mathematical symbols
-		e.g.: \int, \sum, \sqrt
-	limited number of superscripts and subscripts
-		e.g.: ^n, _2
-		_{}  and ^{} expansion are supported as of v0.2
-		e.g.: y_{12}=x^{1+2}
-	some fractions
-		e.g.: \frac{1}{2}, \frac{3}{4}
-	bold
-		e.g.: \textbf{foo}, \mathbf{bar}, \bf{baz}
+Currently supported features in v0.4:
+    Greek alphabet, lowercase and capital
+        e.g.: \pi, \Delta
+    some mathematical symbols
+        e.g.: \int, \sum, \sqrt
+    limited number of superscripts and subscripts
+        e.g.: ^n, _2
+        e.g.: y_{12}=x^{1+2}
+    bold
+        e.g.: \textbf{foo}, \mathbf{bar}, \bf baz
+    scoping/grouping
+        foo {\bf bar} baz
+        2^3+4^{5+6}
+
+TODO:
+    command arguments
+    unicode input
+
