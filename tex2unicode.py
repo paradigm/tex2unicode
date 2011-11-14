@@ -72,197 +72,106 @@ def command_lookup_table(command,states):
         new_attributes.append("bold")
     if command=="bfseries":
         new_attributes.append("scopebold")
+
+    charset1 = ["\\", " ", "^", "{", "}"]
     # escaped special/active
-    if command=="\\":
-        out= "\\"
-    if command==" ":
-        out= " "
-    if command=="^":
-        out= "^"
-    if command=="{":
-        out= "{"
-    if command=="}":
-        out= "}"
-    if command=="textbackslash":
-        out= "\\"
-    if command=="backslash":
-        out= "\\"
-    # greek lower
-    if command=='alpha':
-        out= u'\u03B1'
-    if command=='beta':
-        out= u'\u03B2'
-    if command=='gamma':
-        out= u'\u03B3'
-    if command=='delta':
-        out= u'\u03B4'
-    if command=='epsilon':
-        out= u'\u03B5'
-    if command=='zeta':
-        out= u'\u03B6'
-    if command=='eta':
-        out= u'\u03B7'
-    if command=='theta':
-        out= u'\u03B8'
-    if command=='iota':
-        out= u'\u03B9'
-    if command=='kappa':
-        out= u'\u03BA'
-    if command=='lambda':
-        out= u'\u03BB'
-    if command=='mu':
-        out= u'\u03BC'
-    if command=='nu':
-        out= u'\u03BD'
-    if command=='xi':
-        out= u'\u03BE'
-    if command=='omicron':
-        out= u'\u03BF'
-    if command=='pi':
-        out= u'\u03C0'
-    if command=='rho':
-        out= u'\u03C1'
-# final sigma?
-    if command=='sigma':
-        out= u'\u03C3'
-    if command=='tau':
-        out= u'\u03C4'
-    if command=='upsilon':
-        out= u'\u03C5'
-    if command=='phi':
-        out= u'\u03C6'
-    if command=='chi':
-        out= u'\u03C7'
-    if command=='psi':
-        out= u'\u03C8'
-    if command=='omega':
-        out= u'\u03C9'
-    # greek upper
-    if command=='Alpha':
-        out= u'\u0391'
-    if command=='Beta':
-        out= u'\u0392'
-    if command=='Gamma':
-        out= u'\u0393'
-    if command=='Delta':
-        out= u'\u0394'
-    if command=='Epsilon':
-        out= u'\u0395'
-    if command=='Zeta':
-        out= u'\u0396'
-    if command=='Eta':
-        out= u'\u0397'
-    if command=='Theta':
-        out= u'\u0398'
-    if command=='Iota':
-        out= u'\u0399'
-    if command=='Kappa':
-        out= u'\u039A'
-    if command=='Lambda':
-        out= u'\u039B'
-    if command=='Mu':
-        out= u'\u039C'
-    if command=='Nu':
-        out= u'\u039D'
-    if command=='Xi':
-        out= u'\u039E'
-    if command=='Omicron':
-        out= u'\u039F'
-    if command=='pi':
-        out= u'\u03A0'
-    if command=='Rho':
-        out= u'\u03A1'
-    if command=='Sigma':
-        out= u'\u03A3'
-    if command=='Tau':
-        out= u'\u03A4'
-    if command=='Upsilon':
-        out= u'\u03A5'
-    if command=='Phi':
-        out= u'\u03A6'
-    if command=='Chi':
-        out= u'\u03A7'
-    if command=='Psi':
-        out= u'\u03CA'
-    if command=='Omega':
-        out= u'\u03A9'
-    # math
-    if command=='int':
-        out= u'\u222B'
-    if command=='iint':
-        out= u'\u222C'
-    if command=='iiint':
-        out= u'\u222D'
-    if command=='sum':
-        out= u'\u2211'
-    if command=='infty':
-        out= u'\u221E'
-    if command=='sqrt':
-        out= u'\u221A'
-    if command=='times':
-        out= u'\u00D7'
-    if command=='pm':
-        out= u'\u00B1'
-    if command=='mp':
-        out= u'\u2213'
-    if command=='therefore':
-        out= u'\u2234'
-    if command=='approx':
-        out= u'\u2248'
-    if command=='equiv':
-        out= u'\u2261'
-    # holders until arguments are in place
-    if command=='onehalf':
-        out= u'\u00BD'
-    if command=='onequarter':
-        out= u'\u00BC'
-    if command=='threequarters':
-        out= u'\u00BE'
-    if command=='onethird':
-        out= u'\u2153'
-    if command=='twothirds':
-        out= u'\u2154'
-    if command=='onefifth':
-        out= u'\u2155'
-    if command=='twofifths':
-        out= u'\u2156'
-    if command=='threefifths':
-        out= u'\u2157'
-    if command=='fourfifths':
-        out= u'\u2158'
-    if command=='onesixth':
-        out= u'\u2159'
-    if command=='fivesixths':
-        out= u'\u215A'
-    if command=='oneeight':
-        out= u'\u215B'
-    if command=='threeeights':
-        out= u'\u215C'
-    if command=='fiveeights':
-        out= u'\u215D'
-    if command=='seveneights':
-        out= u'\u215E'
-    # other
-    if command=='square':
-        out= u'\u2610'
-    if command=='checkedbox':
-        out= u'\u2611'
-    if command=='checkmarkbold':
-        out= u'\u2714'
-    if command=='checkmark':
-        out= u'\u2713'
-    if command=='dots':
-        out= u'\u2026'
-    if command=='ldots':
-        out= u'\u2026'
-    if command=='telephone':
-        out= u'\u260F'
-    if command=='heart':
-        out= u'\u2764'
-    if command=='TeX':
-        out= u'T\u1D07X'
-    if command=='LaTeX':
-        out= u'L\u1D2CT\u1D07X'
+    for char in charset1:
+        if char == command:
+            out = char
+
+    charset2 = {
+            "textbackslash" : u"\\",
+            "backslash" : u"\\",
+            "alpha" : u"\u03B1",
+            "beta" : u"\u03B2",
+            "delta" : u"\u03B4",
+            "epsilon" : u"\u03B5",
+            "zeta" : u"\u03B6",
+            "eta" : u"\u03B7",
+            "theta" : u"\u03B8",
+            "iota" : u"\u03B9",
+            "kappa" : u"\u03BA",
+            "lambda" : u"\u03BB",
+            "mu" : u"\u03BC",
+            "nu" : u"\u03BD",
+            "xi" : u"\u03BE",
+            "omicron" : u"\u03BF",
+            "pi" : u"\u03C0",
+            "rho" : u"\u03C1",
+            "sigma" : u"\u03C3",
+            "tau" : u"\u03C4",
+            "upsilon" : u"\u03C5",
+            "phi" : u"\u03C6",
+            "chi" : u"\u03C7",
+            "psi" : u"\u03C8",
+            "omega" : u"\u03C9",
+            "Alpha" : u"\u0391",
+            "Beta" : u"\u0392",
+            "Gamma" : u"\u0393",
+            "Delta" : u"\u0394",
+            "Epsilon" : u"\u0395",
+            "Zeta" : u"\u0396",
+            "Eta" : u"\u0397",
+            "Theta" : u"\u0398",
+            "Iota" : u"\u0399",
+            "Kappa", "\u039A",
+            "Lambda" : u"\u039B",
+            "Mu" : u"\u039C",
+            "Nu" : u"\u039D",
+            "Xi" : u"\u039E",
+            "Omicron" : u"\u039F",
+            "Pi" : u"\u03A0",
+            "Rho" : u"\u03A1",
+            "Sigma" : u"\u03A3",
+            "Tau" : u"\u03A4",
+            "Upsilon" : u"\u03A5",
+            "Phi" : u"\u03A6",
+            "Chi" : u"\u03A7",
+            "Psi" : u"\u03CA",
+            "Omega" : u"\u03A9",
+            "int" : u"\u222B",
+            "iint" : u"\u222C",
+            "iiint" : u"\u222D",
+            "sum" : u"\u2211",
+            "infty" : u"\u221E",
+            "sqrt" : u"\u221A",
+            "times" : u"\u00D7",
+            "pm" : u"\u00B1",
+            "mp" : u"\u2213",
+            "therefore" : u"\u2234",
+            "approx" : u"\u2248",
+            "equiv" : u"\u2261",
+            "onehalf" : u"\u00BD",
+            "onequarter" : u"\u00BC",
+            "threequarters" : u"\u00BE",
+            "onethird" : u"\u2153",
+            "twothirds" : u"\u2154",
+            "onefifth" : u"\u2155",
+            "twofifths" : u"\u2156",
+            "threefifths" : u"\u2157",
+            "fourfifths" : u"\u2158",
+            "onesixth" : u"\u2159",
+            "fivesixths" : u"\u215A",
+            "oneeight" : u"\u215B",
+            "threeeights" : u"\u215C",
+            "fiveeights" : u"\u215D",
+            "seveneights" : u"\u215E",
+            "square" : u"\u2610",
+            "checkedbox" : u"\u2611",
+            "checkmarkbold" : u"\u2714",
+            "checkmark" : u"\u2713",
+            "dots" : u"\u2026",
+            "ldots" : u"\u2026",
+            "telephone" : u"\u260F",
+            "heart" : u"\u2764",
+            "TeX" : u"T\u1D07X",
+            "LaTeX" : u"L\u1D2CT\u1D07X",
+        }
+
+    for char in charset2:
+        if char == command:
+            out = charset2[char]
+
     if len(out)+len(new_attributes)==0:
         out= '\\'+command
     return out, new_attributes
